@@ -7,29 +7,42 @@ import pro.sky.homework5cource2.Exception.NotFoundException;
 
 
 @Service
-public class EmployeeService implements IEmployee {
+public class EmployeeService implements IEmployeeManager {
+
+    private boolean has(String fistName, String lastName) {
+        Employee employee = new Employee(fistName, lastName);
+        for (Employee employee1 : persArray) {
+            if (employee.equals(employee1)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
-    public String addEmployee(String fistName, String lastName) {
-        Employee newEmployee = new Employee(fistName, lastName);
-        for (int i = 0; i < persArray.length; i++) {
-            if (persArray[i] == null) {
-                persArray[i] = newEmployee;
-                return "Новый сотрудник, " + newEmployee + " добавлен в базу";
-            }
-            if (persArray[i].equals(newEmployee)) {
-                throw new BadRequestException();
+    public Employee addEmployee(String fistName, String lastName) {
+        if (has(fistName, lastName)) {
+            throw new BadRequestException();
+        } else {
+            for (int i = 0; i < persArray.length; i++) {
+                if (persArray[i] == null) {
+                    Employee newEmployee = new Employee(fistName, lastName);
+                    persArray[i] = newEmployee;
+                    return newEmployee;
+                }
+
             }
         }
         throw new InternalServerErrorException();
     }
 
     @Override
-    public String removeEmployee(String fistName, String lastName) {
+    public void removeEmployee(String fistName, String lastName) {
+        Employee employee = new Employee(fistName, lastName);
         for (int i = 0; i < persArray.length; i++) {
-            if (persArray[i].getFistName().equals(fistName) && persArray[i].getLastName().equals(lastName)) {
+            if (employee.equals(persArray[i])) {
                 persArray[i] = null;
-                return "Сотрудник " + fistName + " " + lastName + " найден и удален!";
+                return;
             }
         }
         throw new NotFoundException();
@@ -37,17 +50,18 @@ public class EmployeeService implements IEmployee {
     }
 
     @Override
-    public String findEmployee(String fistName, String lastName) {
+    public Employee findEmployee(String fistName, String lastName) {
+        Employee employee = new Employee(fistName, lastName);
         for (int i = 0; i < persArray.length; i++) {
-            if (persArray[i].getFistName().equals(fistName) && persArray[i].getLastName().equals(lastName)) {
-                return "Сотрудник " + persArray[i] + " найден в базе ";
+            if (employee.equals(persArray[i])) {
+                return persArray[i];
             }
         }
         throw new NotFoundException();
 
     }
 
-    Employee[] persArray = new Employee[]{
+    private Employee[] persArray = new Employee[]{
             new Employee("Иван", "Сухин"),
             new Employee("Семен", "Семенов"),
             new Employee("Виктор", "Замков"),
