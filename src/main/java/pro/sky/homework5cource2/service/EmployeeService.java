@@ -2,66 +2,50 @@ package pro.sky.homework5cource2.service;
 
 import org.springframework.stereotype.Service;
 import pro.sky.homework5cource2.Exception.BadRequestException;
-import pro.sky.homework5cource2.Exception.InternalServerErrorException;
 import pro.sky.homework5cource2.Exception.NotFoundException;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
 public class EmployeeService implements IEmployeeManager {
 
-    private boolean has(String fistName, String lastName) {
-        Employee employee = new Employee(fistName, lastName);
-        for (Employee employee1 : persArray) {
-            if (employee.equals(employee1)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     public Employee addEmployee(String fistName, String lastName) {
-        if (has(fistName, lastName)) {
+        Employee employee = new Employee(fistName, lastName);
+        if (persArray.contains(employee)) {
             throw new BadRequestException();
-        } else {
-            for (int i = 0; i < persArray.length; i++) {
-                if (persArray[i] == null) {
-                    Employee newEmployee = new Employee(fistName, lastName);
-                    persArray[i] = newEmployee;
-                    return newEmployee;
-                }
-
-            }
         }
-        throw new InternalServerErrorException();
+        persArray.add(employee);
+        return employee;
     }
 
     @Override
     public void removeEmployee(String fistName, String lastName) {
         Employee employee = new Employee(fistName, lastName);
-        for (int i = 0; i < persArray.length; i++) {
-            if (employee.equals(persArray[i])) {
-                persArray[i] = null;
-                return;
-            }
+        if (!persArray.remove(employee)) {
+            throw new NotFoundException();
         }
-        throw new NotFoundException();
-
     }
 
     @Override
-    public Employee findEmployee(String fistName, String lastName) {
-        Employee employee = new Employee(fistName, lastName);
-        for (int i = 0; i < persArray.length; i++) {
-            if (employee.equals(persArray[i])) {
-                return persArray[i];
-            }
-        }
-        throw new NotFoundException();
+    public Employee findEmployee(Employee employee) {
 
+        if (!persArray.contains(employee)) {
+            throw new NotFoundException();
+        }
+        return persArray.get(persArray.indexOf(employee));
     }
 
-    private Employee[] persArray = new Employee[]{
+    @Override
+    public List<Employee> getList (){
+        return persArray;
+    }
+
+    private List<Employee> persArray = new  ArrayList<>(List.of(
             new Employee("Иван", "Сухин"),
             new Employee("Семен", "Семенов"),
             new Employee("Виктор", "Замков"),
@@ -71,8 +55,9 @@ public class EmployeeService implements IEmployeeManager {
             new Employee("Марина", "Жукова"),
             new Employee("Станислав", "Сумкин"),
             new Employee("Светлана", "Сумка"),
-            new Employee("Андрей", "Петров"),
-    };
+            new Employee("Андрей", "Петров")
+
+    ));
 
 
 }

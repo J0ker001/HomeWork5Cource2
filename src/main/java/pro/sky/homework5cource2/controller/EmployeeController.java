@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.RestController;
 import pro.sky.homework5cource2.service.Employee;
 import pro.sky.homework5cource2.service.EmployeeService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 public class EmployeeController {
 
@@ -30,9 +33,8 @@ public class EmployeeController {
 
     @GetMapping("/find")
     public String findEmployee(String fistName, String lastName) {
-        Employee employee = employeeService.findEmployee(fistName, lastName);
+        Employee employee = employeeService.findEmployee(new Employee(fistName, lastName));
         return "Сотрудник " + employee + " найден!";
-
     }
 
     @GetMapping("/add")
@@ -42,6 +44,15 @@ public class EmployeeController {
         return "Сотрудник " + newEmployee + "добавлен книгу учета";
     }
 
+    @GetMapping("/getList")
+    public List<String> printList() {
+        List<String> result = new ArrayList<String>();
+        for (Employee employee : employeeService.getList()) {
+            result.add(employee.toString());
+        }
+        return result;
+
+    }
 
 }
 
